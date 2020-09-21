@@ -11,7 +11,9 @@ GameObject:
   - component: {fileID: 8972019984551705947}
   - component: {fileID: 5416949877641310974}
   - component: {fileID: 7838559678655563316}
-  m_Layer: 0
+  - component: {fileID: 919132147824439555}
+  - component: {fileID: 919132147824439558}
+  m_Layer: 8
   m_Name: StaticObstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,3 +81,29 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &919132147824439555
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8631381848797784033}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.12875421, y: 0.089122504, z: 0.041758504}
+  m_Center: {x: 0, y: -0.0000000055879354, z: -0.000000059604645}
+--- !u!114 &919132147824439558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8631381848797784033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 649e0c61b7b794a4dbf7695a3c105ad5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  punchPower: 1000

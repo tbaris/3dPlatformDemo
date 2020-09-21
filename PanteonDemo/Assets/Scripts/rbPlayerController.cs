@@ -18,10 +18,15 @@ public class rbPlayerController : MonoBehaviour
 
     public float groundDetectionDistance = 0.1f;
     public bool isGrounded = false;
+    public bool onPlatform = false;
     public bool jumped = false;
     public float jumpPower = 500;
     public float jumpAnimDelay = 0.25f;
     public float jumpReloadTime = 1f;
+
+    public bool isHitted = false;
+
+    public Vector3 externalDrag;
 
     void Start()
     {
@@ -62,20 +67,51 @@ public class rbPlayerController : MonoBehaviour
         jumped = false;
     }
 
+    public void Hitted()
+    {
+        isHitted = true;
+        StartCoroutine("HittedTimer");
+    }
+
+    IEnumerator HittedTimer()
+    {
+        
+        yield return new WaitForSeconds(jumpReloadTime);
+        isHitted = false;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.transform.tag == "Platform")
+        {
+            onPlatform = true;
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.transform.tag == "Platform")
+        {
+            onPlatform = false;
+        }
+    }
+
     void FixedUpdate()
     {
-        if(!Physics.Raycast(transform.position,-Vector3.up, groundDetectionDistance ))
+        if(!Physics.Raycast(transform.position,-Vector3.up, groundDetectionDistance ) && !onPlatform)
         {
             isGrounded = false;
         }
         else
         {
             isGrounded = true;
-            rb.velocity = new Vector3(moveDirection.x, rb.velocity.y, moveDirection.z);
+            if (!isHitted)
+            {
+                rb.velocity = new Vector3(moveDirection.x, rb.velocity.y, moveDirection.z) + externalDrag;
+            }
         }
 
       
-        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
+        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity- externalDrag);
         animator.SetFloat("AnimHor", localVelocity.x);
         animator.SetFloat("AnimVer", localVelocity.z);
     }

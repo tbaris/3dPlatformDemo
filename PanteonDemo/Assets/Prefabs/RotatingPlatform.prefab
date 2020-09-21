@@ -11,9 +11,11 @@ GameObject:
   - component: {fileID: 4245909152710110514}
   - component: {fileID: 955788371267068567}
   - component: {fileID: 3073516789070714461}
-  m_Layer: 0
+  - component: {fileID: 1862703089}
+  - component: {fileID: 1862703093}
+  m_Layer: 8
   m_Name: RotatingPlatform
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -79,3 +81,31 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &1862703089
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3578021171824555912}
+  m_Material: {fileID: 13400000, guid: 7c07310234fee1b498549ecb123390c6, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -1643726260354785405, guid: 3c91112af23b5b643bfa06c5e2ac4256, type: 3}
+--- !u!114 &1862703093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3578021171824555912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e02da4edf211f6743aa5d04980c0d60d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dragFactor: {x: 0, y: 0, z: 0}
+  rotationSpeed: 8

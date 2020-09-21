@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 8643766694626564374}
   - component: {fileID: 5769149927431171548}
   - component: {fileID: 3332721785311531662}
+  - component: {fileID: 723881567}
   m_Layer: 8
   m_Name: RotatingPlatform (1)
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -94,3 +95,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -1643726260354785405, guid: 3c91112af23b5b643bfa06c5e2ac4256, type: 3}
+--- !u!114 &723881567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5409068595998018569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e02da4edf211f6743aa5d04980c0d60d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dragFactor: {x: 0, y: 0, z: 0}
+  rotationSpeed: -8
