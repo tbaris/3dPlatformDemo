@@ -20,6 +20,7 @@ public class rbPlayerController : MonoBehaviour
     public bool isGrounded = false;
     public bool jumped = false;
     public float jumpPower = 500;
+    public float jumpAnimDelay = 0.25f;
     public float jumpReloadTime = 1f;
 
     void Start()
@@ -41,12 +42,12 @@ public class rbPlayerController : MonoBehaviour
         moveDirection = Input.GetAxis("Vertical") * camDirection  + Input.GetAxis("Horizontal") * cam.right;
         moveDirection = moveDirection.normalized * speed;
 
+        
+        animator.SetBool("isGrounded", isGrounded);
 
-
-
-        if(Input.GetAxis("Jump") >0 && isGrounded && !jumped)
+        if (Input.GetAxis("Jump") >0 && isGrounded && !jumped)
         {
-            rb.AddForce(new Vector3(0, jumpPower, 0), ForceMode.Impulse);
+            animator.SetTrigger("Jumped");
             jumped = true;
             StartCoroutine("JumpReload");
         }
@@ -55,7 +56,8 @@ public class rbPlayerController : MonoBehaviour
 
     IEnumerator JumpReload()
     {
-        
+        yield return new WaitForSeconds(jumpAnimDelay);
+        rb.AddForce(new Vector3(0, jumpPower, 0), ForceMode.Impulse);
         yield return new WaitForSeconds(jumpReloadTime);
         jumped = false;
     }
@@ -70,8 +72,12 @@ public class rbPlayerController : MonoBehaviour
         {
             isGrounded = true;
             rb.velocity = new Vector3(moveDirection.x, rb.velocity.y, moveDirection.z);
-        }    
+        }
 
+      
+        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
+        animator.SetFloat("AnimHor", localVelocity.x);
+        animator.SetFloat("AnimVer", localVelocity.z);
     }
 
 }
