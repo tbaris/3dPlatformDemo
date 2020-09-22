@@ -7,12 +7,15 @@ public class rbPlayerController : MonoBehaviour
    
     Transform cam;
 
+    public Vector3 startPos;
+    public Quaternion startRot;
+
     public float speed = 10f;    //player speed
     private float smoothingTurn = 0;    
     public float turnSmoothTime = 0.1f;  //player rotation smoothing
     Animator animator;//player animator 
     Rigidbody rb;//player rigidbody
-
+    
     Vector3 moveDirection = Vector3.zero;
     Vector3 camDirection = Vector3.zero;
 
@@ -30,7 +33,9 @@ public class rbPlayerController : MonoBehaviour
 
     void Start()
     {
-        
+        startPos = transform.position;
+        startRot = transform.rotation;
+
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
         cam = Camera.main.transform;
@@ -85,6 +90,11 @@ public class rbPlayerController : MonoBehaviour
         if(collision.transform.tag == "Platform")
         {
             onPlatform = true;
+        }else if (collision.transform.tag == "FallDetect")
+        {
+            transform.position = startPos;
+            transform.rotation = startRot;
+
         }
     }
     private void OnCollisionExit(Collision collision)

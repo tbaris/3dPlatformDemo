@@ -17,6 +17,11 @@ public class ObstacleMove : MonoBehaviour
     private float xMinPoint;
     private float xMaxPoint;
 
+    public bool isRandomIntervals = false;
+    private bool wait = false;
+    public float minWait = 0.5f;
+    public float maxWait = 5f;
+
     void Start()
     {
         zMinPoint = transform.position.z - zMoveRange;
@@ -38,14 +43,34 @@ public class ObstacleMove : MonoBehaviour
         {
             transform.DOMove(new Vector3(xMinPoint - 0.1f ,transform.position.y ,zMinPoint - 0.1f), moveDuration);
         }
-        if (transform.position.z >= zMaxPoint && transform.position.x >= xMaxPoint)
+        if (transform.position.z >= zMaxPoint && transform.position.x >= xMaxPoint && !wait && dirRight)
         {
-            dirRight = false;
+                dirRight = false;
+           
         }
 
-        if (transform.position.z <= zMinPoint && transform.position.x <= xMinPoint)
+        if (transform.position.z <= zMinPoint && transform.position.x <= xMinPoint && !wait && !dirRight)
         {
-            dirRight = true;
+            if (isRandomIntervals)
+            {
+                wait = true;
+                StartCoroutine("WaitForReturn");
+               
+            }
+            else
+            {
+                dirRight = true;
+            }
         }
     }
+
+    IEnumerator WaitForReturn()
+    {
+        yield return new WaitForSeconds(Random.Range(minWait,maxWait));
+       
+        dirRight = !dirRight;
+        wait = false;
+      
+    }
+
 }

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enviroment
   - Platform
+  - FallDetect
   layers:
   - Default
   - TransparentFX
