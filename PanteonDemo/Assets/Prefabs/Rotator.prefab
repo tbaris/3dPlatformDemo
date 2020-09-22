@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02da4edf211f6743aa5d04980c0d60d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationAngle: {x: 0, y: 1, z: 0}
+  rotationAngle: {x: 0, y: -1, z: 0}
   rotationSpeed: 60
   rotateRandomly: 0
 --- !u!208 &4225149091099873792
@@ -122,7 +122,7 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 1
-  m_Extents: {x: 0.023000002, y: 0.018000001, z: 0.13}
+  m_Extents: {x: 0.0175, y: 0.02, z: 0.13}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 0
@@ -156,6 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   punchPower: 50
   punchScaleFactor: 0.1
+  punchAnimOver: 1
 --- !u!136 &774244283
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -184,6 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   punchPower: 500
   punchScaleFactor: 0.1
+  punchAnimOver: 1
 --- !u!1001 &5662961057704134927
 PrefabInstance:
   m_ObjectHideFlags: 0

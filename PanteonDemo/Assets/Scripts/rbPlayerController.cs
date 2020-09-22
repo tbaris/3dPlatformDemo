@@ -112,7 +112,7 @@ public class rbPlayerController : MonoBehaviour
              //transform.rotation = Quaternion.Euler(0f, angle, 0f);
              moveDirection = agent.desiredVelocity;*/
             transform.LookAt (new Vector3(agent.nextPosition.x, transform.position.y, agent.nextPosition.z));
-            moveDirection = (agent.nextPosition - transform.position).normalized * speed;
+            moveDirection = (agent.nextPosition - transform.position).normalized * speed * agentDistance;
             animator.SetBool("isGrounded", isGrounded);
             
 
