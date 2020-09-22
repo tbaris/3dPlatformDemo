@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class FinishLine : MonoBehaviour
 {
@@ -22,12 +23,23 @@ public class FinishLine : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        collision.transform.GetComponent<rbPlayerController>().enabled = false;
-        collision.transform.GetComponent<Animator>().SetFloat("AnimHor", 0);
-        collision.transform.GetComponent<Animator>().SetFloat("AnimVer", 0);
-        CineCamContoroller.GetComponent<CinemachineFreeLook>().Follow = PaintPivot.transform;
-        CineCamContoroller.GetComponent<CinemachineFreeLook>().LookAt = PaintPivot.transform;
-        WP.enabled = true;
-        CineCamContoroller.GetComponent<CinemachineCollider>().enabled = false;
+        if (collision.transform.tag == "Player")
+        {
+            collision.transform.GetComponent<rbPlayerController>().enabled = false;
+            collision.transform.GetComponent<Animator>().SetFloat("AnimHor", 0);
+            collision.transform.GetComponent<Animator>().SetFloat("AnimVer", 0);
+            CineCamContoroller.GetComponent<CinemachineFreeLook>().Follow = PaintPivot.transform;
+            CineCamContoroller.GetComponent<CinemachineFreeLook>().LookAt = PaintPivot.transform;
+            WP.enabled = true;
+            CineCamContoroller.GetComponent<CinemachineCollider>().enabled = false;
+        }
+        else if(collision.transform.tag == "Opponent")
+        {
+            collision.transform.GetComponent<rbPlayerController>().enabled = false;
+            collision.transform.GetComponent<Animator>().SetFloat("AnimHor", 0);
+            collision.transform.GetComponent<Animator>().SetFloat("AnimVer", 0);
+            collision.transform.GetComponent<NavMeshAgent>().Stop();
+        }
+
     }
 }

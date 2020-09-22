@@ -1,11 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class rbPlayerController : MonoBehaviour
 {
    
     Transform cam;
+
+    public bool isPlayer = false;
+
+    private NavMeshAgent agent;
+    public Transform targetTransform;
 
     public Vector3 startPos;
     public Quaternion startRot;
@@ -30,6 +36,9 @@ public class rbPlayerController : MonoBehaviour
     public bool isHitted = false;
 
     public Vector3 externalDrag;
+    private float startAgentSpeed;
+
+    
 
     void Start()
     {
@@ -38,29 +47,78 @@ public class rbPlayerController : MonoBehaviour
 
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
-        cam = Camera.main.transform;
+
+        if (isPlayer)
+        {
+            cam = Camera.main.transform;
+        }
+        else
+        {
+            agent = transform.GetComponent<NavMeshAgent>();
+            agent.destination = targetTransform.position;
+            agent.updateRotation = false;
+            agent.updatePosition = false;
+            startAgentSpeed = agent.speed;
+
+        }
+
     }
 
    
     void Update()
-    {   //rotate player model acording to camera
-        float targetAngle = cam.eulerAngles.y;
-        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref smoothingTurn, turnSmoothTime);
-        transform.rotation = Quaternion.Euler(0f, angle, 0f);
-        //move player model acording to camera
-        camDirection = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;     
-        moveDirection = Input.GetAxis("Vertical") * camDirection  + Input.GetAxis("Horizontal") * cam.right;
-        moveDirection = moveDirection.normalized * speed;
+    {
 
-        
-        animator.SetBool("isGrounded", isGrounded);
-
-        if (Input.GetAxis("Jump") >0 && isGrounded && !jumped)
+        if (isPlayer)
         {
-            animator.SetTrigger("Jumped");
-            jumped = true;
-            StartCoroutine("JumpReload");
+            //rotate player model acording to camera
+            float targetAngle = cam.eulerAngles.y;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref smoothingTurn, turnSmoothTime);
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+            //move player model acording to camera
+            camDirection = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
+            moveDirection = Input.GetAxis("Vertical") * camDirection + Input.GetAxis("Horizontal") * cam.right;
+            moveDirection = moveDirection.normalized * speed;
+            animator.SetBool("isGrounded", isGrounded);
+
+            if (Input.GetAxis("Jump") > 0 && isGrounded && !jumped)
+            {
+                animator.SetTrigger("Jumped");
+                jumped = true;
+                StartCoroutine("JumpReload");
+            }
         }
+        else
+        {
+            float agentDistance = (agent.nextPosition - transform.position).magnitude;
+            if (agentDistance > 2)
+            {
+                agent.nextPosition = transform.position; 
+            }
+            else if(agentDistance > 1)
+            {
+                agent.speed = 0.1f;
+            }
+            else
+            {
+                agent.speed = startAgentSpeed;
+            }
+            /* float targetAngle = Vector3.Angle(agent.velocity.normalized, -this.transform.forward);
+             if (agent.velocity.normalized.y < this.transform.forward.y)
+             {
+                 targetAngle *= -1;
+             }
+             targetAngle = (targetAngle + 180.0f) % 360.0f;
+             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref smoothingTurn, turnSmoothTime);
+             //transform.rotation = Quaternion.Euler(0f, angle, 0f);
+             moveDirection = agent.desiredVelocity;*/
+            transform.LookAt (new Vector3(agent.nextPosition.x, transform.position.y, agent.nextPosition.z));
+            moveDirection = (agent.nextPosition - transform.position).normalized * speed;
+            animator.SetBool("isGrounded", isGrounded);
+            
+
+        }
+        
+        
        
     }
 
@@ -101,7 +159,7 @@ public class rbPlayerController : MonoBehaviour
     {
         if (collision.transform.tag == "Platform")
         {
-            onPlatform = false;
+           onPlatform = false;
         }
     }
 

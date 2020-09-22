@@ -53,7 +53,7 @@ public class ObstacleRotation : MonoBehaviour
     private void OnCollisionEnter(Collision other)
     {
 
-        if (other.gameObject.tag == "Player")
+        if (other.transform.tag == "Player" || other.transform.tag == "Opponent")
         {
 
             other.transform.GetComponent<rbPlayerController>().externalDrag = dragFactor;
@@ -62,7 +62,7 @@ public class ObstacleRotation : MonoBehaviour
 
     private void OnCollisionStay(Collision other)
     {
-        if (other.gameObject.tag == "Player")
+        if (other.transform.tag == "Player" || other.transform.tag == "Opponent")
         {
 
             other.transform.GetComponent<rbPlayerController>().externalDrag = dragFactor;
@@ -71,7 +71,7 @@ public class ObstacleRotation : MonoBehaviour
 
     private void OnCollisionExit(Collision other)
     {
-        if (other.gameObject.tag == "Player")
+        if (other.transform.tag == "Player" || other.transform.tag == "Opponent")
         {
             other.transform.GetComponent<rbPlayerController>().externalDrag = Vector3.zero;
 

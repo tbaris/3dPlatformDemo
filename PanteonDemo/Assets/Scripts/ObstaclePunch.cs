@@ -9,7 +9,7 @@ public class ObstaclePunch : MonoBehaviour
 
     public float punchScaleFactor = 1.1f;
 
-    
+    public bool punchAnimOver = true;
 
     // Start is called before the first frame update
     void Start()
@@ -19,13 +19,16 @@ public class ObstaclePunch : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.tag == "Player") 
+        if ((collision.transform.tag == "Player" || collision.transform.tag == "Opponent") && !collision.transform.GetComponent<rbPlayerController>().isHitted) 
         {
             Debug.Log("player hit");
             
             Vector3 hitDirection = Vector3.Reflect(collision.contacts[0].point-collision.transform.position, collision.contacts[0].normal);
-
-            transform.DOPunchScale(transform.localScale * punchScaleFactor, 0.2f, 2, 1);
+            if (punchAnimOver)
+            {
+                punchAnimOver = false;
+                transform.DOPunchScale(transform.localScale * punchScaleFactor, 0.2f, 2, 1);
+            }
 
             collision.transform.GetComponent<rbPlayerController>().Hitted();
             collision.transform.GetComponent<Rigidbody>().AddForce(hitDirection.normalized * punchPower, ForceMode.Impulse);
@@ -33,6 +36,12 @@ public class ObstaclePunch : MonoBehaviour
         }
     }
 
+    IEnumerator punchAnimReload()
+    {
+        yield return new WaitForSeconds(0.3f);
+        punchAnimOver = true;
+       
+    }
     // Update is called once per frame
     void Update()
     {
