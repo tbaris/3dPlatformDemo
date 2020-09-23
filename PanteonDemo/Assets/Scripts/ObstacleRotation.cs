@@ -11,6 +11,7 @@ public class ObstacleRotation : MonoBehaviour
     private float activeRotationSpeed = 0;
 
     public bool rotateRandomly = false;
+    public bool dragOpponents = false;
 
     // Start is called before the first frame update
     void Start()
@@ -27,14 +28,14 @@ public class ObstacleRotation : MonoBehaviour
 
     IEnumerator RotateRandom()
     {
-        yield return new WaitForSeconds(Mathf.Abs(activeRotationSpeed));
+        yield return new WaitForSeconds(Mathf.Abs(activeRotationSpeed/4)); //waits as long as rotation speed
         if (activeRotationSpeed > 0)
         {
-            activeRotationSpeed = -Random.Range(3, rotationSpeed);
+            activeRotationSpeed = -Random.Range(3, rotationSpeed); //reverse
         }
         else
         {
-            activeRotationSpeed = Random.Range(3, rotationSpeed);
+            activeRotationSpeed = Random.Range(3, rotationSpeed);//forward
         }
         
         StartCoroutine("RotateRandom");
@@ -44,32 +45,32 @@ public class ObstacleRotation : MonoBehaviour
     void Update()
     {
        
-            transform.Rotate(rotationAngle * activeRotationSpeed * Time.deltaTime);
-            dragFactor = rotationAngle * activeRotationSpeed / 2;
+            transform.Rotate(rotationAngle * activeRotationSpeed * Time.deltaTime);//rotates object
+            dragFactor = rotationAngle * activeRotationSpeed / 2; // sets applied force to oppenents
         
     }
 
 
-    private void OnCollisionEnter(Collision other)
+    private void OnCollisionEnter(Collision other) //applies force to opponents on rotation vector
     {
 
-        if (other.transform.tag == "Player" || other.transform.tag == "Opponent")
+        if ((other.transform.tag == "Player" || other.transform.tag == "Opponent") && dragOpponents)
         {
 
             other.transform.GetComponent<rbPlayerController>().externalDrag = dragFactor;
         }
     }
 
-    private void OnCollisionStay(Collision other)
+    private void OnCollisionStay(Collision other)//applies force to opponents on rotation vector
     {
-        if (other.transform.tag == "Player" || other.transform.tag == "Opponent")
+        if ((other.transform.tag == "Player" || other.transform.tag == "Opponent") && dragOpponents)
         {
 
             other.transform.GetComponent<rbPlayerController>().externalDrag = dragFactor;
         }
     }
 
-    private void OnCollisionExit(Collision other)
+    private void OnCollisionExit(Collision other)// resets aplied force when leaved
     {
         if (other.transform.tag == "Player" || other.transform.tag == "Opponent")
         {

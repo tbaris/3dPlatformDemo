@@ -11,19 +11,22 @@ public class ObstaclePunch : MonoBehaviour
 
     public bool punchAnimOver = true;
 
+    public AudioClip[] hitSounds;
+
     // Start is called before the first frame update
     void Start()
     {
         
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)  // punches opponents if collided
     {
         if ((collision.transform.tag == "Player" || collision.transform.tag == "Opponent") && !collision.transform.GetComponent<rbPlayerController>().isHitted) 
         {
-            Debug.Log("player hit");
+
             
             Vector3 hitDirection = Vector3.Reflect(collision.contacts[0].point-collision.transform.position, collision.contacts[0].normal);
+            randomSoundPlay(hitSounds);
             if (punchAnimOver)
             {
                 punchAnimOver = false;
@@ -36,7 +39,21 @@ public class ObstaclePunch : MonoBehaviour
         }
     }
 
-    IEnumerator punchAnimReload()
+    private void randomSoundPlay(AudioClip[] audioList) //plats random clip from the list feeded 
+    {
+        if (audioList.Length > 0)
+        {
+            int soundInd = Random.Range(0, audioList.Length);
+
+            AudioSource.PlayClipAtPoint(audioList[soundInd], transform.position);
+        }
+        else
+        {
+            Debug.Log("audio array is not defined at" + transform.name);
+        }
+    }
+
+    IEnumerator punchAnimReload() // waits for punch anim ends to prevent a gigantic bug 
     {
         yield return new WaitForSeconds(0.3f);
         punchAnimOver = true;
