@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,7 +13,8 @@ public class rbPlayerController : MonoBehaviour
 
     private NavMeshAgent agent;
     public GameObject targetTransform;
-    public int wayPointIndex = 0;
+    public Vector3 wayPointPos;
+    
 
     public Vector3 startPos;
     public Quaternion startRot;
@@ -70,7 +72,7 @@ public class rbPlayerController : MonoBehaviour
         {
            
             agent = transform.GetComponent<NavMeshAgent>();
-            agent.destination = targetTransform.transform.GetComponent<WaypointHolder>().wayPoints[wayPointIndex].gameObject.transform.position;
+            
             agent.updateRotation = false;
             agent.updatePosition = false;
             startAgentSpeed = agent.speed;
@@ -104,7 +106,69 @@ public class rbPlayerController : MonoBehaviour
         isRunStarted = true;
     }
 
-   
+    private void playerController()
+    {
+        //rotate player model acording to camera
+        float targetAngle = cam.eulerAngles.y;
+        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref smoothingTurn, turnSmoothTime);
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        //move player model acording to camera
+        camDirection = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
+        moveDirection = Input.GetAxis("Vertical") * camDirection + Input.GetAxis("Horizontal") * cam.right;
+        moveDirection = moveDirection.normalized * speed;
+        animator.SetBool("isGrounded", isGrounded);
+
+        if (Input.GetAxis("Jump") > 0 && isGrounded && !jumped && jumpMode) //jump machanics
+        {
+            animator.SetTrigger("Jumped");
+            jumped = true;
+            StartCoroutine("JumpReload");
+        }
+    }
+
+    private void aiController() //ai controller to follow agent
+    {
+
+        float agentDistance = (agent.nextPosition - transform.position).magnitude;
+
+
+        if (agentDistance > 2.1f)// resets navmesh agent position if gets too far away
+        {
+            agent.nextPosition = transform.position;
+        }
+        else if (agentDistance > 0.5f)// slow down navmesh agent if gets far
+        {
+            agent.speed = Mathf.Lerp(startAgentSpeed, 0.1f, agentDistance / 2);
+
+        }
+        else
+        {
+            agent.speed = startAgentSpeed;
+        }
+
+        transform.LookAt(new Vector3(agent.nextPosition.x, transform.position.y, agent.nextPosition.z)); //sets rotation to look to navmesh agent
+        moveDirection = (agent.nextPosition - transform.position).normalized * speed * agentDistance; //sets direction towards to navmesh agent
+        animator.SetBool("isGrounded", isGrounded);
+
+
+
+
+        foreach (KeyValuePair<GameObject, float> keyValue in targetTransform.transform.GetComponent<WaypointHolder>().wayPointDict)
+        {
+
+            if (Vector3.Distance(transform.position, targetTransform.transform.position) - 5 > keyValue.Value)
+            {
+                agent.destination = keyValue.Key.transform.position;
+                wayPointPos = keyValue.Key.transform.position;
+                break;
+            }
+            else
+            {
+                agent.destination = targetTransform.transform.position;
+                wayPointPos = targetTransform.transform.position;
+            }
+        }
+    }
     void Update()
     {
         if (isRunStarted)
@@ -112,82 +176,12 @@ public class rbPlayerController : MonoBehaviour
 
             if (isPlayer)// if it is player sets control to axis and cam rotation
             {
-                //rotate player model acording to camera
-                float targetAngle = cam.eulerAngles.y;
-                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref smoothingTurn, turnSmoothTime);
-                transform.rotation = Quaternion.Euler(0f, angle, 0f);
-                //move player model acording to camera
-                camDirection = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
-                moveDirection = Input.GetAxis("Vertical") * camDirection + Input.GetAxis("Horizontal") * cam.right;
-                moveDirection = moveDirection.normalized * speed;
-                animator.SetBool("isGrounded", isGrounded);
-
-                if (Input.GetAxis("Jump") > 0 && isGrounded && !jumped && jumpMode) //jump machanics
-                {
-                    animator.SetTrigger("Jumped");
-                    jumped = true;
-                    StartCoroutine("JumpReload");
-                }
+                playerController();
+              
             }
             else// if its ai sets controls to follow navmesh agent
             {
-                float agentDistance = (agent.nextPosition - transform.position).magnitude;
-
-
-                if (agentDistance > 2.1f)// resets navmesh agent position if gets too far away
-                {
-                    agent.nextPosition = transform.position;
-                }
-                else if (agentDistance > 0.5f)// slow down navmesh agent if gets far
-                {
-                    agent.speed = Mathf.Lerp(startAgentSpeed, 0.1f, agentDistance / 2);
-
-                }
-                else
-                {
-                    agent.speed = startAgentSpeed;
-                }
-
-                transform.LookAt(new Vector3(agent.nextPosition.x, transform.position.y, agent.nextPosition.z)); //sets rotation to look to navmesh agent
-                moveDirection = (agent.nextPosition - transform.position).normalized * speed * agentDistance; //sets direction towards to navmesh agent
-                animator.SetBool("isGrounded", isGrounded);
-
-
-
-
-                foreach (KeyValuePair<GameObject, float> keyValue in targetTransform.transform.GetComponent<WaypointHolder>().wayPointDict)
-                {
-
-                    if (Vector3.Distance(transform.position, targetTransform.transform.position) - 3 > keyValue.Value)
-                    {
-                        agent.destination = keyValue.Key.transform.position;
-                        break;
-                    }
-                    else
-                    {
-                        agent.destination = targetTransform.transform.position;
-                    }
-                }
-
-
-
-
-                /*
-                if (Vector3.Distance(agent.destination, transform.position) < 1) //sets navmesh agent destination to next waypoint if current waypoint is near 
-                {
-                    
-                    if (wayPointIndex + 1 < targetTransform.transform.GetComponent<WaypointHolder>().wayPoints.Count)
-                    {
-                        wayPointIndex = wayPointIndex + 1;
-                        agent.destination = targetTransform.transform.GetComponent<WaypointHolder>().wayPoints[wayPointIndex].gameObject.transform.position;
-                    }
-                    else // if waypoints ended sets to final destination
-                    {
-                        agent.destination = targetTransform.transform.position;
-                    }
-                }*/
-
-
+                aiController();
             }
 
 
@@ -224,7 +218,7 @@ public class rbPlayerController : MonoBehaviour
     {
         transform.position = startPos;
         transform.rotation = startRot;
-        wayPointIndex = 0;
+       
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         if(!isPlayer)
@@ -233,11 +227,12 @@ public class rbPlayerController : MonoBehaviour
             
             rb.isKinematic = true;
             isRunStarted = false;
+            StartCoroutine("returnCoolDown", 0.5f);
 
         }
         
 
-        StartCoroutine("returnCoolDown", 0.5f); 
+      
 
     }
     IEnumerator returnCoolDown(float coolDownTime)// gives player contol back and if requested return player back in start pos.

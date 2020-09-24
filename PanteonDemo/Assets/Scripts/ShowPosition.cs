@@ -6,54 +6,72 @@ using UnityEngine;
 
 public class ShowPosition : MonoBehaviour
 {
-    public TextMeshPro positionText;
+
+    private bool isStarted = false;
     public List<GameObject> contestants;
+    public GameObject finishLine;
     // Start is called before the first frame update
     void Start()
     {
 
         GameManager.current.startRun += getContestants;
-       
+        finishLine = GameObject.FindGameObjectWithTag("Finish");
+        
+
     }
 
     private void getContestants() // gets all contestant after opponents spwaned
     {
         contestants.Clear();
         contestants.AddRange(GameObject.FindGameObjectsWithTag("Opponent"));
-        contestants.Add(this.gameObject);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
+        contestants.AddRange(GameObject.FindGameObjectsWithTag("Player"));
         if (contestants.Count > 0)
         {
-            //sort contestants by the distance to the finish line
-            contestants = contestants.OrderBy(x => Vector3.Distance(transform.gameObject.GetComponent<rbPlayerController>().targetTransform.transform.position, x.transform.position)).ToList();
-
-            int positionNumer = contestants.IndexOf(this.gameObject) + 1;
-
-            //shows rank of player as ordinal numbers
-
-            switch (positionNumer)
-            {
-
-                case 3:
-                    positionText.text = positionNumer.ToString() + "rd/" + contestants.Count;
-                    break;
-                case 2:
-                    positionText.text = positionNumer.ToString() + "nd/" + contestants.Count;
-                    break;
-                case 1:
-                    positionText.text = positionNumer.ToString() + "st/" + contestants.Count;
-                    break;
-                default:
-                    positionText.text = positionNumer.ToString() + "th/" + contestants.Count;
-                    break;
-            }
+            isStarted = true;
         }
+    }
 
+    private void Update()
+    {
+        if(isStarted)
+        {
+            getPosition();
+        }
+    }
+
+
+    public void getPosition()
+    {
        
+            
+            contestants = contestants.OrderBy(x => Vector3.Distance(finishLine.transform.position, x.transform.position)).ToList();
+
+            foreach (GameObject op in contestants)
+            {
+                 op.transform.GetComponentInChildren<TextMeshPro>().text = showPosition(contestants.IndexOf(op) + 1 + finishLine.transform.GetComponent<FinishLine>().finishedContestants.Count);
+            }
+
+     
+        
+    }
+    private string showPosition(int positionNumer)
+    {
+        switch (positionNumer)
+        {
+
+            case 3:
+                return (positionNumer.ToString() + "rd/" + contestants.Count);
+                
+            case 2:
+                return (positionNumer.ToString() + "nd/" + contestants.Count);
+                
+            case 1:
+                return (positionNumer.ToString() + "st/" + contestants.Count);
+               
+            default:
+                return (positionNumer.ToString() + "th/" + contestants.Count);
+                
+        }
     }
 
     private void OnDestroy()

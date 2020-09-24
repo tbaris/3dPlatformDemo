@@ -20,9 +20,7 @@ public class WaypointHolder : MonoBehaviour
         wayPoints = wayPoints.OrderBy(x => Vector3.Distance(transform.position, x.transform.position)).ToList();
         wayPoints.Reverse();
 
-        List<GameObject> WP = GameObject.FindGameObjectsWithTag("WayPoint").ToList();
-        WP = WP.OrderBy(x => Vector3.Distance(transform.position, x.transform.position)).ToList();
-        WP.Reverse();
+       
 
         for (int i = 0; i < wayPoints.Count; i++)
         {
